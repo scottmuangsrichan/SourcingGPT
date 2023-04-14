@@ -30,6 +30,16 @@ import { api } from "~/utils/api";
       purchase price at wholesale cost, 
       Amazon Buy Box price, 
       Quantity amount per unit,
+
+    Another case is to say
+      Hey, go to this website and find every product on here that has a 
+      1% BSR ranking on amazon 
+      30% profit margin after cost of goods sold
+      $X price 
+
+      TODO: 
+        Connect OpenAi API to project
+        
 * */
 
 const Home: NextPage = () => {
