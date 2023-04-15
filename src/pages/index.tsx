@@ -3,6 +3,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
+import { useState, useEffect } from "react";
+
 import { api } from "~/utils/api";
 
 /**
@@ -43,7 +45,30 @@ import { api } from "~/utils/api";
 * */
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const [result, setResult] = useState('');
+  const [input , setInput] = useState('');
+
+  async function onSubmit(event: { preventDefault: () => void; } | undefined) {
+    event.preventDefault();
+    try{
+      const response = await fetch("/api/openAi", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({input: input})
+      });
+      const data = await response.json();
+      if (response.status !== 200) {
+        throw data.error || new Error(`Request failed with status ${response.status}`);
+      }
+
+      setResult(data.result);
+      setInput("")
+    } catch(error) {
+      console.error(error);
+    }
+  }
 
   return (
     <>
@@ -59,14 +84,18 @@ const Home: NextPage = () => {
             <AuthShowcase />
           </div>
           <div>
-            <h1>This is where I want the results to be.</h1>
+            <p>{result}</p>
           </div>
           <div className="bg-black flex flex-row">
-            <textarea 
+            <form onSubmit={onSubmit}>
+            <input 
               className="border border-black h-full w-full text-black rounded-lg"
               placeholder="Send a message..."
-            ></textarea>
-            <button>Send</button>
+              value={input}
+              onChange={(event) => setInput(event.target.value)}/>
+            </form>
+            
+            <button onClick={()=> onSubmit()}>Send</button>
           </div>
         </div>
       </main>
